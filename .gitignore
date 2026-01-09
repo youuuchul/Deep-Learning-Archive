@@ -1,0 +1,24 @@
+# System files
+.DS_Store
+.ipynb_checkpoints/
+
+# Python/Environment
+__pycache__/
+*.py[cod]
+.venv/
+.env
+
+# Data & Large files
+data/
+baseline_code/
+x_ray_checkpoints/
+models/
+outputs/
+results/
+eval_results/
+backup/
+*.zip
+*.tar.gz
+*.pkl
+*.pth
+*.pt
