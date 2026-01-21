@@ -1,0 +1,89 @@
+2026-01-14 16:38:52,002 - Mission11_NMT - INFO - Logger 세팅 완료. 프로젝트를 시작합니다.
+2026-01-14 16:39:05,383 - Mission11_NMT - INFO - Current Device: mps
+2026-01-14 16:39:09,369 - Mission11_NMT - INFO - 학습 및 검증 데이터 경로 설정 완료
+2026-01-14 16:39:54,920 - Mission11_NMT - INFO - 성공적으로 전처리 데이터를 로드했습니다. (Train: 1,082,046 rows)
+2026-01-14 16:39:54,937 - Mission11_NMT - INFO - DataLoader 준비 완료. Batch Size: 64
+2026-01-14 16:39:59,577 - Mission11_NMT - INFO - [TRAIN Batch Sample]
+2026-01-14 16:39:59,578 - Mission11_NMT - INFO -  - Source Shape (KO): torch.Size([64, 30])
+2026-01-14 16:39:59,579 - Mission11_NMT - INFO -  - Target Shape (EN): torch.Size([64, 27])
+2026-01-14 16:39:59,581 - Mission11_NMT - INFO - [VALID Batch Sample]
+2026-01-14 16:39:59,582 - Mission11_NMT - INFO -  - Source Shape (KO): torch.Size([64, 25])
+2026-01-14 16:39:59,582 - Mission11_NMT - INFO -  - Target Shape (EN): torch.Size([64, 25])
+2026-01-14 16:40:41,151 - Mission11_NMT - INFO - 모델 초기화 완료: 가중치 파라미터 수 = 48,945,914개
+2026-01-14 16:43:10,119 - Mission11_NMT - INFO - 🛠️ 디버그 테스트 시작 (1 Batch)
+2026-01-14 16:43:12,312 - Mission11_NMT - INFO - Output Shape: torch.Size([2, 24, 41466])
+2026-01-14 16:43:13,890 - Mission11_NMT - INFO - ✅ 디버그 테스트 성공! 모델 구조에 문제가 없습니다.
+2026-01-14 16:54:06,268 - Mission11_NMT - INFO - Attention 모델 빌드 성공: Vocab(45083, 41466)
+2026-01-14 16:54:43,668 - Mission11_NMT - INFO - 🛠️ Phase 4: Attention 모델 디버그 테스트 시작 (1 Batch)
+2026-01-14 16:55:02,360 - Mission11_NMT - ERROR - ❌ Attention 모델 테스트 중 오류 발생: too many values to unpack (expected 2)
+2026-01-14 16:55:02,465 - Mission11_NMT - ERROR - Traceback (most recent call last):
+  File "/var/folders/l3/c5p364vd49z9t2353fr9w3nm0000gn/T/ipykernel_18603/2273139043.py", line 13, in debug_attention_test
+    output = model(src, trg)
+  File "/Users/youuchul/Documents/github/01_deep_learning/11_seq2seq-attention-translation/.venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/Users/youuchul/Documents/github/01_deep_learning/11_seq2seq-attention-translation/.venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/var/folders/l3/c5p364vd49z9t2353fr9w3nm0000gn/T/ipykernel_18603/4248548762.py", line 17, in forward
+    encoder_outputs, hidden = self.encoder(src)
+ValueError: too many values to unpack (expected 2)
+
+2026-01-14 17:01:28,156 - Mission11_NMT - INFO - 🛠️ 디버그 테스트 시작 (1 Batch)
+2026-01-14 17:01:32,832 - Mission11_NMT - INFO - Output Shape: torch.Size([2, 31, 41466])
+2026-01-14 17:01:35,888 - Mission11_NMT - INFO - ✅ 디버그 테스트 성공! 모델 구조에 문제가 없습니다.
+2026-01-14 17:01:44,253 - Mission11_NMT - INFO - Attention 모델 빌드 성공: Vocab(45083, 41466)
+2026-01-14 17:01:47,479 - Mission11_NMT - INFO - 🛠️ Phase 4: Attention 모델 디버그 테스트 시작 (1 Batch)
+2026-01-14 17:01:49,003 - Mission11_NMT - ERROR - ❌ Attention 모델 테스트 중 오류 발생: Sizes of tensors must match except in dimension 2. Expected size 2 but got size 30 for tensor number 1 in the list.
+2026-01-14 17:01:49,010 - Mission11_NMT - ERROR - Traceback (most recent call last):
+  File "/var/folders/l3/c5p364vd49z9t2353fr9w3nm0000gn/T/ipykernel_18603/2273139043.py", line 13, in debug_attention_test
+    output = model(src, trg)
+  File "/Users/youuchul/Documents/github/01_deep_learning/11_seq2seq-attention-translation/.venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/Users/youuchul/Documents/github/01_deep_learning/11_seq2seq-attention-translation/.venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/var/folders/l3/c5p364vd49z9t2353fr9w3nm0000gn/T/ipykernel_18603/4248548762.py", line 23, in forward
+    output, hidden = self.decoder(input, hidden, encoder_outputs)
+  File "/Users/youuchul/Documents/github/01_deep_learning/11_seq2seq-attention-translation/.venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/Users/youuchul/Documents/github/01_deep_learning/11_seq2seq-attention-translation/.venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/var/folders/l3/c5p364vd49z9t2353fr9w3nm0000gn/T/ipykernel_18603/3647864407.py", line 16, in forward
+    a = self.attention(hidden, encoder_outputs)
+  File "/Users/youuchul/Documents/github/01_deep_learning/11_seq2seq-attention-translation/.venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/Users/youuchul/Documents/github/01_deep_learning/11_seq2seq-attention-translation/.venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/var/folders/l3/c5p364vd49z9t2353fr9w3nm0000gn/T/ipykernel_18603/1304150677.py", line 21, in forward
+    energy = torch.tanh(self.attn(torch.cat((hidden, encoder_outputs), dim=2)))
+RuntimeError: Sizes of tensors must match except in dimension 2. Expected size 2 but got size 30 for tensor number 1 in the list.
+
+2026-01-14 17:05:12,737 - Mission11_NMT - INFO - Attention 모델 빌드 성공: Vocab(45083, 41466)
+2026-01-14 17:05:15,317 - Mission11_NMT - INFO - 🛠️ Phase 4: Attention 모델 디버그 테스트 시작 (1 Batch)
+2026-01-14 17:05:16,286 - Mission11_NMT - ERROR - ❌ Attention 모델 테스트 중 오류 발생: Sizes of tensors must match except in dimension 2. Expected size 2 but got size 28 for tensor number 1 in the list.
+2026-01-14 17:05:16,301 - Mission11_NMT - ERROR - Traceback (most recent call last):
+  File "/var/folders/l3/c5p364vd49z9t2353fr9w3nm0000gn/T/ipykernel_18603/2273139043.py", line 13, in debug_attention_test
+    output = model(src, trg)
+  File "/Users/youuchul/Documents/github/01_deep_learning/11_seq2seq-attention-translation/.venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/Users/youuchul/Documents/github/01_deep_learning/11_seq2seq-attention-translation/.venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/var/folders/l3/c5p364vd49z9t2353fr9w3nm0000gn/T/ipykernel_18603/4248548762.py", line 23, in forward
+    output, hidden = self.decoder(input, hidden, encoder_outputs)
+  File "/Users/youuchul/Documents/github/01_deep_learning/11_seq2seq-attention-translation/.venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/Users/youuchul/Documents/github/01_deep_learning/11_seq2seq-attention-translation/.venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/var/folders/l3/c5p364vd49z9t2353fr9w3nm0000gn/T/ipykernel_18603/1937135499.py", line 17, in forward
+    a = self.attention(hidden, encoder_outputs)
+  File "/Users/youuchul/Documents/github/01_deep_learning/11_seq2seq-attention-translation/.venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/Users/youuchul/Documents/github/01_deep_learning/11_seq2seq-attention-translation/.venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/var/folders/l3/c5p364vd49z9t2353fr9w3nm0000gn/T/ipykernel_18603/2291995573.py", line 22, in forward
+    energy = torch.tanh(self.attn(torch.cat((hidden, encoder_outputs), dim=2)))
+RuntimeError: Sizes of tensors must match except in dimension 2. Expected size 2 but got size 28 for tensor number 1 in the list.
+
+2026-01-14 17:08:17,350 - Mission11_NMT - INFO - 🛠️ Phase 4: Attention 모델 디버그 테스트 시작 (1 Batch)
+2026-01-14 17:08:20,320 - Mission11_NMT - INFO - Input Src Shape: torch.Size([2, 30])
+2026-01-14 17:08:20,325 - Mission11_NMT - INFO - Input Trg Shape: torch.Size([2, 31])
+2026-01-14 17:08:20,326 - Mission11_NMT - INFO - Attention Output Shape: torch.Size([2, 31, 41466])
+2026-01-14 17:08:24,775 - Mission11_NMT - INFO - ✅ Attention 모델 구조 및 차원 검증 성공!

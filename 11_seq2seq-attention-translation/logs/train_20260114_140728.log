@@ -1,0 +1,58 @@
+2026-01-14 14:07:28,107 - Mission11_NMT - INFO - Logger 세팅 완료. 프로젝트를 시작합니다.
+2026-01-14 14:07:31,175 - Mission11_NMT - INFO - Current Device: mps
+2026-01-14 14:07:32,321 - Mission11_NMT - INFO - 학습 및 검증 데이터 경로 설정 완료
+2026-01-14 14:07:35,141 - Mission11_NMT - INFO - [TRAIN] 캐시된 데이터를 로드했습니다. (1,082,046 rows)
+2026-01-14 14:07:35,215 - Mission11_NMT - INFO - [VALID] 캐시된 데이터를 로드했습니다. (141,607 rows)
+2026-01-14 14:07:35,216 - Mission11_NMT - INFO - 전체 데이터 준비 완료. Train: 1,082,046, Valid: 141,607
+2026-01-14 14:07:50,120 - Mission11_NMT - INFO - Train 도메인 수: 3개
+2026-01-14 14:07:50,152 - Mission11_NMT - INFO - 도메인 목록: ['해외영업', '일상생활', '해외고객과의채팅']
+2026-01-14 14:09:35,284 - Mission11_NMT - INFO - 전체 서브도메인 개수: 11개
+2026-01-14 14:09:35,329 - Mission11_NMT - INFO - 주요 서브도메인 Top 5: ['도소매유통', '음식', '여행', '연구개발,과학기술', '정보통신']
+2026-01-14 14:09:54,502 - Mission11_NMT - INFO - 전체 서브도메인 개수: 11개
+2026-01-14 14:09:54,547 - Mission11_NMT - INFO - 주요 서브도메인 Top 5: ['도소매유통', '음식', '여행', '연구개발,과학기술', '정보통신']
+2026-01-14 14:10:03,448 - Mission11_NMT - INFO - 전체 서브도메인 개수: 11개
+2026-01-14 14:10:03,491 - Mission11_NMT - INFO - 주요 서브도메인 Top 5: ['도소매유통', '음식', '여행', '연구개발,과학기술', '정보통신']
+2026-01-14 14:13:09,472 - Mission11_NMT - INFO - 
+[문장 길이 통계]
+       word_count_ko  word_count_en
+count   1.082046e+06   1.082046e+06
+mean    6.932720e+00   1.044106e+01
+std     3.766801e+00   5.589150e+00
+min     1.000000e+00   1.000000e+00
+25%     4.000000e+00   6.000000e+00
+50%     6.000000e+00   1.000000e+01
+75%     9.000000e+00   1.400000e+01
+max     7.900000e+01   1.340000e+02
+2026-01-14 14:13:09,581 - Mission11_NMT - INFO - 한국어 길이 95%: 14.0, 99%: 18.0
+2026-01-14 14:13:09,582 - Mission11_NMT - INFO - 영어 길이 95%: 21.0, 99%: 27.0
+2026-01-14 14:15:31,415 - Mission11_NMT - INFO - KO 95% 길이: 14.0 / EN 95% 길이: 21.0
+2026-01-14 14:18:23,964 - Mission11_NMT - INFO - 한국어(KO) - 95% 지점: 14.0 / 99% 지점: 18.0
+2026-01-14 14:18:24,087 - Mission11_NMT - INFO - 영어(EN) - 95% 지점: 21.0 / 99% 지점: 27.0
+2026-01-14 14:21:46,701 - Mission11_NMT - INFO - 한국어(KO) - 95% 지점: 14.0 / 99% 지점: 18.0
+2026-01-14 14:21:46,816 - Mission11_NMT - INFO - 영어(EN) - 95% 지점: 21.0 / 99% 지점: 27.0
+2026-01-14 14:25:23,929 - Mission11_NMT - INFO - 텍스트 정제(Regex Cleaning)를 시작합니다...
+2026-01-14 14:25:28,982 - Mission11_NMT - INFO - [TRAIN] 정제 완료
+2026-01-14 14:25:29,624 - Mission11_NMT - INFO - [VALID] 정제 완료
+2026-01-14 14:25:29,626 - Mission11_NMT - INFO - 전체 정제 소요 시간: 5.70s
+2026-01-14 14:27:42,823 - Mission11_NMT - INFO - 데이터 토큰화를 시작합니다. (약 5~10분 소요)
+2026-01-14 14:27:42,824 - Mission11_NMT - INFO - [TRAIN] 한국어 토큰화 중...
+2026-01-14 14:28:05,030 - Mission11_NMT - INFO - [TRAIN] 영어 토큰화 중...
+2026-01-14 14:28:28,048 - Mission11_NMT - INFO - [TRAIN] 토큰화 완료
+2026-01-14 14:28:28,049 - Mission11_NMT - INFO - [VALID] 한국어 토큰화 중...
+2026-01-14 14:28:30,522 - Mission11_NMT - INFO - [VALID] 영어 토큰화 중...
+2026-01-14 14:28:32,697 - Mission11_NMT - INFO - [VALID] 토큰화 완료
+2026-01-14 14:33:51,504 - Mission11_NMT - INFO - 단어 사전(Vocabulary) 구축을 시작합니다.
+2026-01-14 14:33:55,359 - Mission11_NMT - INFO - 한국어 단어 사전 크기: 45,083
+2026-01-14 14:33:55,360 - Mission11_NMT - INFO - 영어 단어 사전 크기: 41,466
+2026-01-14 14:35:21,277 - Mission11_NMT - INFO - 모든 전처리 결과가 저장되었습니다: ../data/nmt_preprocessed_final.pkl
+2026-01-14 14:35:21,283 - Mission11_NMT - INFO - 데이터 전처리 Phase 1 종료.
+2026-01-14 14:38:07,933 - Mission11_NMT - INFO - 모든 전처리 결과가 저장되었습니다: ../data/nmt_preprocessed_final.pkl
+2026-01-14 14:44:37,245 - Mission11_NMT - INFO - 성공적으로 전처리 데이터를 로드했습니다. (Train: 1,082,046 rows)
+2026-01-14 14:44:40,357 - Mission11_NMT - INFO - DataLoader 준비 완료. Batch Size: 64
+2026-01-14 14:47:45,194 - Mission11_NMT - INFO - [TRAIN Batch Sample]
+2026-01-14 14:47:45,195 - Mission11_NMT - INFO -  - Source Shape (KO): torch.Size([64, 30])
+2026-01-14 14:47:45,195 - Mission11_NMT - INFO -  - Target Shape (EN): torch.Size([64, 28])
+2026-01-14 14:47:45,201 - Mission11_NMT - INFO - [VALID Batch Sample]
+2026-01-14 14:47:45,201 - Mission11_NMT - INFO -  - Source Shape (KO): torch.Size([64, 25])
+2026-01-14 14:47:45,201 - Mission11_NMT - INFO -  - Target Shape (EN): torch.Size([64, 25])
+2026-01-14 15:06:16,015 - Mission11_NMT - INFO - 모델 초기화 완료: 가중치 파라미터 수 = 48,945,914개

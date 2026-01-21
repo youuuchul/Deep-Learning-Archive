@@ -1,0 +1,8 @@
+2026-01-14 13:56:03,477 - Mission11_NMT - INFO - Logger 세팅 완료. 프로젝트를 시작합니다.
+2026-01-14 13:56:07,296 - Mission11_NMT - INFO - Current Device: mps
+2026-01-14 13:58:27,890 - Mission11_NMT - INFO - 학습 및 검증 데이터 경로 설정 완료
+2026-01-14 13:59:37,500 - Mission11_NMT - INFO - [TRAIN] 피클 파일이 없습니다. 원본 JSON 처리를 시작합니다. (경로: ../data/일상생활및구어체_한영_train_set.json)
+2026-01-14 14:00:46,099 - Mission11_NMT - INFO - [TRAIN] 전처리 및 피클 저장 완료. 소요 시간: 68.60s, 규모: 1,082,046 rows
+2026-01-14 14:00:51,970 - Mission11_NMT - INFO - [VALID] 피클 파일이 없습니다. 원본 JSON 처리를 시작합니다. (경로: ../data/일상생활및구어체_한영_valid_set.json)
+2026-01-14 14:00:56,497 - Mission11_NMT - INFO - [VALID] 전처리 및 피클 저장 완료. 소요 시간: 4.53s, 규모: 141,607 rows
+2026-01-14 14:00:56,613 - Mission11_NMT - INFO - 전체 데이터 준비 완료. Train: 1,082,046, Valid: 141,607

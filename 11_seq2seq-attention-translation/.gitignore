@@ -1,0 +1,31 @@
+# --- Python / Virtual Environment ---
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+requirements.txt.bak
+
+# --- Jupyter Notebook ---
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+
+# --- Data & Local Storage (중요!) ---
+# data 폴더와 model_checkpoints 폴더의 구조는 유지하지만 내용은 무시합니다.
+data/*
+model_checkpoints/*
+
+# 단, 폴더 자체를 Git에 추적시키기 위해 .gitkeep 파일(빈 파일)은 제외하지 않습니다.
+!data/.gitkeep
+!model_checkpoints/.gitkeep
+
+# 특정 확장자 제외
+*.json
+*.pkl
+*.pt
+*.zip
+*.tar.gz
+
+# --- OS / IDE ---
+.DS_Store
+.vscode/
+.idea/
