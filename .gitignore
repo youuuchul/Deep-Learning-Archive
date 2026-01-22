@@ -22,3 +22,6 @@ backup/
 *.pkl
 *.pth
 *.pt
+*.safetensors
+*.pt
+*.bin
