@@ -1,0 +1,8 @@
+transformers>=4.48.0
+peft>=0.9.0
+datasets>=2.17.0
+evaluate>=0.4.1
+accelerate>=0.27.0
+scikit-learn
+pandas
+torch
