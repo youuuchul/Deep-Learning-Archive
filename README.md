@@ -32,6 +32,31 @@
 - **핵심 기술**: NLP Preprocessing, Text Classification
 - **데이터셋**: 20 Newsgroups
 
+### 11. 🌐 [Seq2Seq Attention Translation](./11_seq2seq-attention-translation)
+- **주제**: Seq2Seq + Attention 메커니즘 기반 한영 기계 번역
+- **핵심 기술**: Seq2Seq, Attention Mechanism, NLP
+- **데이터셋**: AI Hub 한국어-영어 번역 말뭉치
+
+### 12. 📝 [NLP Summarization (KoBART)](./12_NLP_Summarization)
+- **주제**: KoBART 기반 법률 문서 추상적 요약
+- **핵심 기술**: Abstractive Summarization, KoBART, HuggingFace Transformers
+- **데이터셋**: 한국어 법률 문서
+
+### 13. 💬 [Sentiment Analysis: Full Fine-Tuning vs PEFT](./13_SentimentAnalysis_Project)
+- **주제**: 한국어 쇼핑몰 리뷰 감성 분석 — Full Fine-Tuning과 LoRA(PEFT) 비교
+- **핵심 기술**: BERT, LoRA, PEFT, Fine-Tuning
+- **데이터셋**: 한국어 쇼핑몰 리뷰
+
+### 14. 🏛️ [NTS Tax RAG](./14_NTS-Tax-RAG)
+- **주제**: 국세청 자료 기반 연말정산 Q&A RAG 시스템 구축
+- **핵심 기술**: RAG, LangChain, Vector DB (FAISS/Chroma), LLM Quantization
+- **데이터셋**: 2024년 귀속 연말정산 종합 안내 PDF
+
+### 15. 🐳 [Docker 기반 ML 협업 워크플로우](./15_Docker)
+- **주제**: Docker를 활용한 ML 모델 패키징 및 협업 환경 구축 실습
+- **핵심 기술**: Docker, Docker Compose, ML 모델 배포
+- **데이터셋**: Student Performance Dataset
+
 ---
 
 ## ⚙️ Environment | 환경 설정
