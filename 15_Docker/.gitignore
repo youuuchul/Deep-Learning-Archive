@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Artifacts
+data/shared/*.pkl
+data/shared/*.csv
+data/shared/*.json
+data/shared/*.md
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store
+
+# Claude Code
+.claude/

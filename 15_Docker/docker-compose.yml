@@ -1,0 +1,55 @@
+services:
+  modeling-trainer:
+    build:
+      context: .
+      dockerfile: docker/modeling.Dockerfile
+    image: mission15/modeling:local
+    container_name: mission15-modeling-trainer
+    volumes:
+      - ./data/raw:/workspace/data/raw:ro
+      - ./data/shared:/workspace/data/shared
+    restart: "no"
+
+  inference-notebook:
+    build:
+      context: .
+      dockerfile: docker/inference-notebook.Dockerfile
+    image: mission15/inference-notebook:local
+    container_name: mission15-inference-notebook
+    depends_on:
+      - modeling-trainer
+    working_dir: /workspace/notebook/inference
+    volumes:
+      - ./data/raw:/workspace/data/raw:ro
+      - ./data/shared:/workspace/data/shared
+      - ./notebook/inference:/workspace/notebook/inference
+      - ./src/inference:/workspace/src/inference
+    ports:
+      - "8888:8888"
+
+  inference-batch:
+    build:
+      context: .
+      dockerfile: docker/inference-notebook.Dockerfile
+    image: mission15/inference-notebook:local
+    container_name: mission15-inference-batch
+    depends_on:
+      - modeling-trainer
+    volumes:
+      - ./data/raw:/workspace/data/raw:ro
+      - ./data/shared:/workspace/data/shared
+      - ./src/inference:/workspace/src/inference
+    command:
+      [
+        "python",
+        "/workspace/src/inference/run_inference.py",
+        "--model-path",
+        "/workspace/data/shared/model.pkl",
+        "--test-path",
+        "/workspace/data/shared/mission15_test.csv",
+        "--output-path",
+        "/workspace/data/shared/result.csv"
+      ]
+    profiles:
+      - batch
+    restart: "no"
