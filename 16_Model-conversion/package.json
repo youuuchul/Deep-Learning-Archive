@@ -1,0 +1,18 @@
+{
+  "name": "16_model-conversion",
+  "version": "1.0.0",
+  "description": "MNIST CNN ONNX inference in Node.js (Mission 16 심화)",
+  "main": "inference.js",
+  "scripts": {
+    "start": "node inference.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "jimp": "^0.22.12",
+    "onnxruntime-node": "^1.24.3"
+  }
+}
