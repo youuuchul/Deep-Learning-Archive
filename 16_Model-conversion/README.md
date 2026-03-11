@@ -148,3 +148,18 @@ PNG 이미지
 | `ONNX_Format.md` | ONNX 포맷 구조, opset, IR 버전 |
 | `ONNX_Runtime_Node.md` | Node.js ONNX Runtime API 상세 |
 | `Quantization.md` | 양자화 개념, dynamic/static 차이 |
+
+---
+
+## 요약 보고서
+
+`reports/report.html` — 미션 전체 요약 보고서 (브라우저에서 열어 PDF로 출력)
+
+- 추출된 모델 파일 및 용량 비교
+- Python ONNX 추론 결과 및 시각화
+- Node.js 추론 결과 스크린샷
+- 디버깅·오류 해결 과정 3건
+
+```bash
+open reports/report.html
+```

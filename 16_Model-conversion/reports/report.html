@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mission 16 - 모델 변환 요약 보고서</title>
+  <style>
+    /* ── 기본 설정 ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+      font-size: 14px;
+      line-height: 1.7;
+      color: #1a1a2e;
+      background: #f7f9fc;
+      padding: 40px 0;
+    }
+
+    /* ── 페이지 컨테이너 ── */
+    .page {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #ffffff;
+      box-shadow: 0 4px 30px rgba(0,0,0,0.08);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    /* ── 헤더 ── */
+    .header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      color: white;
+      padding: 48px 48px 36px;
+    }
+    .header-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #e0e7ff;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+    }
+    .header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+    .header h2 {
+      font-size: 16px;
+      font-weight: 400;
+      color: #a0b4d6;
+      margin-bottom: 24px;
+    }
+    .header-meta {
+      display: flex;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+    .meta-item { font-size: 13px; color: #c0cfe8; }
+    .meta-item strong { color: white; display: block; font-size: 14px; }
+
+    /* ── 본문 ── */
+    .content { padding: 40px 48px; }
+
+    /* ── 섹션 ── */
+    .section { margin-bottom: 44px; }
+    .section-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #0f3460;
+      border-left: 4px solid #e94560;
+      padding-left: 12px;
+      margin-bottom: 20px;
+    }
+    .section-subtitle {
+      font-size: 14px;
+      font-weight: 600;
+      color: #334155;
+      margin: 16px 0 8px;
+    }
+
+    /* ── 요약 카드 그리드 ── */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .summary-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 18px 20px;
+      background: #fafbff;
+    }
+    .summary-card .label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      color: #64748b;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .summary-card .value {
+      font-size: 22px;
+      font-weight: 700;
+      color: #0f3460;
+    }
+    .summary-card .sub {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+    .summary-card.accent {
+      border-color: #0f3460;
+      background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+    }
+    .summary-card.accent .label { color: #a0b4d6; }
+    .summary-card.accent .value { color: white; }
+    .summary-card.accent .sub { color: #7ba3cc; }
+
+    /* ── 테이블 ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+    thead th {
+      background: #0f3460;
+      color: white;
+      padding: 11px 14px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 12.5px;
+    }
+    thead th:first-child { border-radius: 6px 0 0 0; }
+    thead th:last-child  { border-radius: 0 6px 0 0; }
+    tbody tr:nth-child(even) { background: #f8faff; }
+    tbody tr:hover { background: #eff4ff; }
+    tbody td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #e8ecf3;
+      vertical-align: middle;
+    }
+    .mono { font-family: 'Consolas', 'Menlo', monospace; font-size: 12.5px; color: #1e3a5f; }
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .tag-pth     { background: #dbeafe; color: #1e40af; }
+    .tag-pth-q   { background: #ede9fe; color: #5b21b6; }
+    .tag-onnx    { background: #d1fae5; color: #065f46; }
+    .tag-data    { background: #fef3c7; color: #92400e; }
+    .size-bar-wrap {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .size-bar {
+      height: 8px;
+      border-radius: 4px;
+      background: #3b82f6;
+      min-width: 4px;
+    }
+    .size-text { font-size: 13px; font-weight: 600; white-space: nowrap; }
+
+    /* ── 이미지 ── */
+    .screenshot-wrap {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+    .screenshot-caption {
+      background: #f1f5f9;
+      padding: 8px 14px;
+      font-size: 12px;
+      color: #64748b;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .screenshot-wrap img {
+      width: 100%;
+      display: block;
+    }
+
+    /* ── 결과 배지 ── */
+    .result-block {
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      border-left: 4px solid #22c55e;
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-family: 'Consolas', 'Menlo', monospace;
+      font-size: 13px;
+      color: #14532d;
+      white-space: pre-line;
+      margin-top: 12px;
+    }
+    .result-block.info {
+      background: #eff6ff;
+      border-color: #93c5fd;
+      border-left-color: #3b82f6;
+      color: #1e3a8a;
+    }
+
+    /* ── 디버깅 섹션 ── */
+    .debug-item {
+      border: 1px solid #fecaca;
+      border-left: 4px solid #ef4444;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    .debug-header {
+      background: #fff1f2;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .debug-num {
+      background: #ef4444;
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .debug-title { font-weight: 600; font-size: 14px; color: #991b1b; }
+    .debug-body { padding: 14px 18px; background: white; }
+    .debug-row { margin-bottom: 10px; }
+    .debug-row:last-child { margin-bottom: 0; }
+    .debug-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      color: #64748b;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .debug-text { font-size: 13.5px; color: #334155; }
+    .code-inline {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-family: 'Consolas', 'Menlo', monospace;
+      font-size: 12.5px;
+      color: #1e3a5f;
+    }
+    .resolved-badge {
+      display: inline-block;
+      background: #dcfce7;
+      color: #15803d;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid #86efac;
+      margin-left: 8px;
+    }
+
+    /* ── 파일 목록 ── */
+    .file-list { list-style: none; }
+    .file-list li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 13.5px;
+    }
+    .file-list li:last-child { border-bottom: none; }
+    .file-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+    .file-name { font-family: 'Consolas', 'Menlo', monospace; font-size: 12.5px; color: #1e3a5f; flex: 1; }
+    .file-desc { color: #64748b; font-size: 12.5px; }
+
+    /* ── 푸터 ── */
+    .footer {
+      background: #f8fafc;
+      border-top: 1px solid #e2e8f0;
+      padding: 20px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    /* ── 인쇄 최적화 ── */
+    @media print {
+      body { background: white; padding: 0; font-size: 12px; }
+      .page { box-shadow: none; border-radius: 0; max-width: 100%; }
+      .content { padding: 24px 32px; }
+      .header { padding: 32px 32px 24px; }
+      .section { margin-bottom: 28px; }
+      .summary-grid { grid-template-columns: repeat(3, 1fr); }
+      .debug-item { page-break-inside: avoid; }
+      .screenshot-wrap { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── 헤더 ── -->
+  <div class="header">
+    <div class="header-badge">Mission 16 Summary Report</div>
+    <h1>모델 변환 및 Node.js 추론</h1>
+    <h2>MNIST CNN → .pth / 양자화 .pth / .onnx 변환 + JavaScript 크로스 플랫폼 추론</h2>
+    <div class="header-meta">
+      <div class="meta-item"><strong>날짜</strong>2026-03-11</div>
+      <div class="meta-item"><strong>모델 선택</strong>MNIST CNN (LeNet-style)</div>
+      <div class="meta-item"><strong>언어 환경</strong>Python (PyTorch) + Node.js (JavaScript)</div>
+      <div class="meta-item"><strong>평가 데이터셋</strong>MNIST test set (10,000장)</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ── 1. 미션 요약 ── -->
+    <div class="section">
+      <div class="section-title">1. 미션 요약</div>
+      <div class="summary-grid">
+        <div class="summary-card accent">
+          <div class="label">ONNX 추론 정확도</div>
+          <div class="value">99.09%</div>
+          <div class="sub">기준 95% 이상 ✓ 달성</div>
+        </div>
+        <div class="summary-card">
+          <div class="label">변환 포맷 수</div>
+          <div class="value">3종</div>
+          <div class="sub">.pth / 양자화 .pth / .onnx</div>
+        </div>
+        <div class="summary-card">
+          <div class="label">Node.js 추론 대상</div>
+          <div class="value">3장</div>
+          <div class="sub">image1→8, image2→3, image3→2</div>
+        </div>
+      </div>
+      <p style="color:#475569; font-size:13.5px;">
+        MNIST 데이터셋(60,000장)으로 학습한 CNN 모델을 PyTorch <span class="code-inline">state_dict</span>,
+        <span class="code-inline">quantize_dynamic</span>(INT8), <span class="code-inline">torch.onnx.export</span>(opset 11)으로 변환·저장.
+        Python <span class="code-inline">onnxruntime</span>으로 정확도를 검증하고, 심화 미션으로 <strong>Node.js</strong> 환경에서
+        <span class="code-inline">onnxruntime-node</span> + <span class="code-inline">jimp</span>를 이용해 이미지 3장 추론을 완료.
+      </p>
+    </div>
+
+    <!-- ── 2. 모델 파일 현황 ── -->
+    <div class="section">
+      <div class="section-title">2. 추출된 모델 파일 및 용량</div>
+      <table>
+        <thead>
+          <tr>
+            <th>포맷</th>
+            <th>파일명</th>
+            <th>용량</th>
+            <th>크기 비교</th>
+            <th>설명</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag tag-pth">PyTorch</span></td>
+            <td class="mono">mission_16_mnist_cnn.pth</td>
+            <td><strong>1.61 MB</strong><br><span style="font-size:11px;color:#94a3b8;">1,690,307 bytes</span></td>
+            <td>
+              <div class="size-bar-wrap">
+                <div class="size-bar" style="width:100px; background:#3b82f6;"></div>
+                <span class="size-text" style="color:#1e40af;">1.61 MB</span>
+              </div>
+            </td>
+            <td style="color:#475569;">PyTorch <span class="code-inline">state_dict</span> 저장 — 기본 float32 가중치</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-pth-q">양자화</span></td>
+            <td class="mono">mission_16_mnist_cnn_quantized.pth</td>
+            <td><strong>472 KB</strong><br><span style="font-size:11px;color:#94a3b8;">483,869 bytes</span></td>
+            <td>
+              <div class="size-bar-wrap">
+                <div class="size-bar" style="width:29px; background:#8b5cf6;"></div>
+                <span class="size-text" style="color:#5b21b6;">472 KB</span>
+              </div>
+            </td>
+            <td style="color:#475569;"><span class="code-inline">quantize_dynamic</span> INT8 — FC 레이어 양자화, <strong>71% 절감</strong></td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-onnx">ONNX</span></td>
+            <td class="mono">mission_16_mnist_cnn.onnx</td>
+            <td><strong>14.2 KB</strong><br><span style="font-size:11px;color:#94a3b8;">14,590 bytes</span></td>
+            <td>
+              <div class="size-bar-wrap">
+                <div class="size-bar" style="width:1px; background:#10b981;"></div>
+                <span class="size-text" style="color:#065f46;">14 KB</span>
+              </div>
+            </td>
+            <td style="color:#475569;">ONNX 그래프 구조 파일 (opset 11)</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-data">ONNX data</span></td>
+            <td class="mono">mission_16_mnist_cnn.onnx.data</td>
+            <td><strong>1.66 MB</strong><br><span style="font-size:11px;color:#94a3b8;">1,736,704 bytes</span></td>
+            <td>
+              <div class="size-bar-wrap">
+                <div class="size-bar" style="width:103px; background:#f59e0b;"></div>
+                <span class="size-text" style="color:#92400e;">1.66 MB</span>
+              </div>
+            </td>
+            <td style="color:#475569;">ONNX external data 파일 — 가중치 분리 저장 (대형 모델 대비 호환)</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="font-size:12px; color:#94a3b8; margin-top:8px;">
+        * ONNX 모델 실질 용량 = .onnx + .onnx.data ≈ 1.68 MB &nbsp;|&nbsp;
+        양자화 효과: 1.61 MB → 472 KB (약 71% 감소)
+      </p>
+    </div>
+
+    <!-- ── 3. 기본 미션 - Python ONNX 추론 결과 ── -->
+    <div class="section">
+      <div class="section-title">3. 기본 미션 — Python ONNX 추론 검증</div>
+
+      <div class="result-block">ONNX 모델 추론 결과
+총 10,000장 중 9,909장 정답
+정확도: 0.9909 (99.09%)
+✓ 95% 이상 달성</div>
+
+      <div class="screenshot-wrap" style="margin-top:20px;">
+        <div class="screenshot-caption">
+          📊 inference.ipynb — ONNX 추론 샘플 시각화 (green=correct, red=wrong)
+        </div>
+        <img src="../screenshots/onnx_inference_sample.png" alt="ONNX Inference Sample" />
+      </div>
+    </div>
+
+    <!-- ── 4. 심화 미션 - Node.js 추론 결과 ── -->
+    <div class="section">
+      <div class="section-title">4. 심화 미션 — Node.js ONNX 추론 결과</div>
+      <p style="font-size:13.5px; color:#475569; margin-bottom:12px;">
+        Python 없이 <strong>JavaScript (Node.js)</strong> 환경에서 ONNX 모델을 직접 로드하여 추론.
+        <span class="code-inline">onnxruntime-node</span> + <span class="code-inline">jimp v0.22.x</span>를 사용,
+        PNG 이미지를 Float32Array → NCHW 텐서로 변환 후 argmax로 예측 레이블 출력.
+      </p>
+
+      <table style="margin-bottom:16px;">
+        <thead>
+          <tr>
+            <th>이미지</th>
+            <th>예측 결과</th>
+            <th>처리 파이프라인</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono">image1.png</td>
+            <td><strong style="font-size:18px; color:#0f3460;">8</strong></td>
+            <td style="color:#475569; font-size:13px;">PNG → resize(28×28) → grayscale → Float32Array[784] → Tensor[1,1,28,28] → argmax</td>
+          </tr>
+          <tr>
+            <td class="mono">image2.png</td>
+            <td><strong style="font-size:18px; color:#0f3460;">3</strong></td>
+            <td style="color:#475569; font-size:13px;">PNG → resize(28×28) → grayscale → Float32Array[784] → Tensor[1,1,28,28] → argmax</td>
+          </tr>
+          <tr>
+            <td class="mono">image3.png</td>
+            <td><strong style="font-size:18px; color:#0f3460;">2</strong></td>
+            <td style="color:#475569; font-size:13px;">PNG → resize(28×28) → grayscale → Float32Array[784] → Tensor[1,1,28,28] → argmax</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="screenshot-wrap">
+        <div class="screenshot-caption">
+          💻 터미널 — <code>node inference.js</code> 실행 결과
+        </div>
+        <img src="../screenshots/nodejs_target_images_inference_result.png" alt="Node.js Inference Result" />
+      </div>
+    </div>
+
+    <!-- ── 5. 디버깅 / 오류 해결 ── -->
+    <div class="section">
+      <div class="section-title">5. 디버깅 및 오류 해결 과정</div>
+
+      <!-- 디버그 1 -->
+      <div class="debug-item">
+        <div class="debug-header">
+          <div class="debug-num">1</div>
+          <div class="debug-title">data/models/ gitignore로 인한 모델 파일 미추적 문제<span class="resolved-badge">해결됨</span></div>
+        </div>
+        <div class="debug-body">
+          <div class="debug-row">
+            <div class="debug-label">문제 상황</div>
+            <div class="debug-text">
+              <span class="code-inline">.gitignore</span>에 <span class="code-inline">data/models/</span>가 등록되어 있어,
+              학습 후 생성된 <span class="code-inline">.pth</span> / <span class="code-inline">.onnx</span> 파일들이
+              git 추적 대상에서 제외됨. <span class="code-inline">git status</span>에서 모델 파일이 보이지 않아 발견.
+            </div>
+          </div>
+          <div class="debug-row">
+            <div class="debug-label">원인</div>
+            <div class="debug-text">
+              대용량 데이터 제외 목적의 gitignore 설정이 모델 파일에도 적용됨.
+              원래 의도는 <span class="code-inline">data/mnist_data/</span>(MNIST 원본 데이터, ~11MB)만 제외였으나,
+              모델 파일이 같은 <span class="code-inline">data/</span> 하위에 생성되어 함께 무시됨.
+            </div>
+          </div>
+          <div class="debug-row">
+            <div class="debug-label">해결 방법</div>
+            <div class="debug-text">
+              <span class="code-inline">.gitignore</span>에서 <span class="code-inline">data/models/</span> 라인 제거.
+              <span class="code-inline">data/mnist_data/</span>는 유지(대용량 데이터셋). 이후 모델 3종 정상 추적 확인.
+            </div>
+          </div>
+          <div class="result-block info" style="font-size:12px;">
+# 수정 후 .gitignore
+node_modules/
+data/mnist_data/     ← MNIST 원본 데이터 (유지)
+__pycache__/
+.ipynb_checkpoints/
+*.pyc
+.DS_Store
+.venv/
+ai_history/code_insights/    ← 개인 학습 노트 (신규 추가)</div>
+        </div>
+      </div>
+
+      <!-- 디버그 2 -->
+      <div class="debug-item">
+        <div class="debug-header">
+          <div class="debug-num">2</div>
+          <div class="debug-title">git add 시 gitignore 파일이 스테이징된 문제<span class="resolved-badge">해결됨</span></div>
+        </div>
+        <div class="debug-body">
+          <div class="debug-row">
+            <div class="debug-label">문제 상황</div>
+            <div class="debug-text">
+              <span class="code-inline">git add 16_Model-conversion/</span> 실행 시,
+              <span class="code-inline">ai_history/code_insights/NodeJS_ONNX_Inference.md</span>가
+              gitignore 설정에도 불구하고 스테이징 영역에 포함됨.
+              비공개 학습 노트가 원격 저장소에 노출될 뻔한 상황.
+            </div>
+          </div>
+          <div class="debug-row">
+            <div class="debug-label">원인</div>
+            <div class="debug-text">
+              <strong>git의 gitignore 동작 원리</strong>: <span class="code-inline">git add</span>로 경로를 명시하면
+              gitignore 규칙이 우회됨 (git은 명시적 추가를 우선). 새로 생성된 파일에도 동일하게 적용.
+            </div>
+          </div>
+          <div class="debug-row">
+            <div class="debug-label">해결 방법</div>
+            <div class="debug-text">
+              <span class="code-inline">git restore --staged 16_Model-conversion/ai_history/code_insights/</span> 로 스테이징 취소.
+              이후 해당 경로를 제외하고 커밋 진행.
+            </div>
+          </div>
+          <div class="result-block info" style="font-size:12px;"># 스테이징 취소 명령
+git restore --staged 16_Model-conversion/ai_history/code_insights/
+
+# 확인
+git status
+→ ai_history/code_insights/ 제거 완료 ✓</div>
+        </div>
+      </div>
+
+      <!-- 디버그 3 -->
+      <div class="debug-item">
+        <div class="debug-header">
+          <div class="debug-num">3</div>
+          <div class="debug-title">jimp v1.x vs v0.22.x ESM/CommonJS 호환성 문제<span class="resolved-badge">사전 방지</span></div>
+        </div>
+        <div class="debug-body">
+          <div class="debug-row">
+            <div class="debug-label">문제 상황</div>
+            <div class="debug-text">
+              Node.js 환경에서 CommonJS(<span class="code-inline">require()</span>) 방식으로 작성한 코드에서
+              <span class="code-inline">jimp</span>를 최신 버전으로 설치하면 다음 오류 발생 가능:
+              <span class="code-inline">Error [ERR_REQUIRE_ESM]: require() of ES Module not supported</span>
+            </div>
+          </div>
+          <div class="debug-row">
+            <div class="debug-label">원인</div>
+            <div class="debug-text">
+              <span class="code-inline">jimp v1.x</span>는 ESM(ES Modules) 전용으로 변경됨.
+              <span class="code-inline">require()</span>와 호환되지 않으며 <span class="code-inline">import</span> 문법과 함께 사용해야 함.
+              반면 <span class="code-inline">onnxruntime-node</span>는 CommonJS 방식으로 동작.
+            </div>
+          </div>
+          <div class="debug-row">
+            <div class="debug-label">해결 방법</div>
+            <div class="debug-text">
+              <span class="code-inline">package.json</span>에 <span class="code-inline">"jimp": "^0.22.12"</span>로 버전 고정.
+              v0.22.x는 CommonJS <span class="code-inline">require()</span> 완전 지원.
+            </div>
+          </div>
+          <div class="result-block info" style="font-size:12px;"># package.json 의존성
+"dependencies": {
+  "jimp": "^0.22.12",          ← CommonJS 호환 버전 고정
+  "onnxruntime-node": "^1.24.3"
+}
+
+# v1.x 사용 시 오류 예시
+Error [ERR_REQUIRE_ESM]: require() of ES Module
+.../jimp/dist/index.js not supported</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── 6. 생성/수정 파일 목록 ── -->
+    <div class="section">
+      <div class="section-title">6. 생성 및 수정 파일 목록</div>
+      <ul class="file-list">
+        <li>
+          <div class="file-icon" style="background:#dbeafe;">📓</div>
+          <div class="file-name">modeling.ipynb</div>
+          <div class="file-desc">MNIST CNN 학습 + 3종 포맷 변환 (기본 미션 1)</div>
+        </li>
+        <li>
+          <div class="file-icon" style="background:#d1fae5;">📓</div>
+          <div class="file-name">inference.ipynb</div>
+          <div class="file-desc">Python ONNX 추론 정확도 검증 — 99.09% 달성 (기본 미션 2)</div>
+        </li>
+        <li>
+          <div class="file-icon" style="background:#fef3c7;">📄</div>
+          <div class="file-name">inference.js</div>
+          <div class="file-desc">Node.js ONNX 추론 스크립트 — onnxruntime-node + jimp (심화 미션)</div>
+        </li>
+        <li>
+          <div class="file-icon" style="background:#ede9fe;">📄</div>
+          <div class="file-name">data/models/mission_16_mnist_cnn.pth</div>
+          <div class="file-desc">PyTorch state_dict 저장 모델 (1.61 MB)</div>
+        </li>
+        <li>
+          <div class="file-icon" style="background:#ede9fe;">📄</div>
+          <div class="file-name">data/models/mission_16_mnist_cnn_quantized.pth</div>
+          <div class="file-desc">양자화 모델 INT8 — FC 레이어 (472 KB, 71% 절감)</div>
+        </li>
+        <li>
+          <div class="file-icon" style="background:#d1fae5;">📄</div>
+          <div class="file-name">data/models/mission_16_mnist_cnn.onnx (+.onnx.data)</div>
+          <div class="file-desc">ONNX 변환 모델 opset 11 (총 ~1.68 MB)</div>
+        </li>
+        <li>
+          <div class="file-icon" style="background:#fee2e2;">🚫</div>
+          <div class="file-name">.gitignore</div>
+          <div class="file-desc">data/models/ 제거 (모델 파일 추적), ai_history/code_insights/ 추가 (개인 노트 제외)</div>
+        </li>
+        <li>
+          <div class="file-icon" style="background:#f0fdf4;">📝</div>
+          <div class="file-name">study-notes/NodeJS_JavaScript.md</div>
+          <div class="file-desc">Node.js/JS 기초 개념 + 프로젝트 코드 패턴 (신규)</div>
+        </li>
+        <li>
+          <div class="file-icon" style="background:#f0f9ff;">📝</div>
+          <div class="file-name">README.md</div>
+          <div class="file-desc">폴더 구조·실행 순서·모델 파일·학습노트 최종 정리</div>
+        </li>
+      </ul>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- ── 푸터 ── -->
+  <div class="footer">
+    <span>Mission 16 — 모델 변환 및 Node.js 추론 &nbsp;|&nbsp; 2026-03-11</span>
+    <span>Deep Learning Study Repository</span>
+  </div>
+
+</div><!-- /page -->
+</body>
+</html>
