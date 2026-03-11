@@ -57,6 +57,11 @@
 - **핵심 기술**: Docker, Docker Compose, ML 모델 배포
 - **데이터셋**: Student Performance Dataset
 
+### 16. 🔄 [모델 변환 및 Node.js 추론](./16_Model-conversion)
+- **주제**: MNIST CNN 모델을 3종 포맷으로 변환하고 JavaScript(Node.js) 환경에서 ONNX 추론
+- **핵심 기술**: PyTorch 모델 변환 (.pth / 양자화 .pth / .onnx), ONNX Runtime, Node.js 크로스 플랫폼 추론
+- **데이터셋**: MNIST
+
 ---
 
 ## ⚙️ Environment | 환경 설정
