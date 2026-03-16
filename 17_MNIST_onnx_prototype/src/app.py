@@ -66,11 +66,49 @@ for key, default in [
         st.session_state[key] = default
 
 
-def _to_png_bytes(image: np.ndarray) -> bytes:
-    """28×28 float32 배열을 PNG bytes로 변환."""
-    uint8 = (image * 255).clip(0, 255).astype(np.uint8)
+def _to_png_bytes(image: np.ndarray, label: int | None = None, probs: np.ndarray | None = None) -> bytes:
+    """28×28 float32 배열을 PNG bytes로 변환.
+
+    label과 probs가 주어지면 예측 결과 + 확률 바를 합성한 이미지를 반환.
+    """
+    from PIL import ImageDraw, ImageFont
+
+    # 28×28 → 280×280 업스케일 (픽셀 선명하게)
+    cell = (image * 255).clip(0, 255).astype(np.uint8)
+    thumb = Image.fromarray(cell, mode="L").resize((280, 280), Image.NEAREST)
+
+    if label is None or probs is None:
+        buf = io.BytesIO()
+        thumb.save(buf, format="PNG")
+        return buf.getvalue()
+
+    # 합성 캔버스: 흰 배경 (280px 이미지 + 120px 결과 영역)
+    W, H_img, H_info = 280, 280, 120
+    canvas = Image.new("RGB", (W, H_img + H_info), color=(255, 255, 255))
+    canvas.paste(thumb.convert("RGB"), (0, 0))
+
+    draw = ImageDraw.Draw(canvas)
+    try:
+        font_large = ImageFont.truetype("/System/Library/Fonts/Helvetica.ttc", 28)
+        font_small = ImageFont.truetype("/System/Library/Fonts/Helvetica.ttc", 13)
+    except Exception:
+        font_large = font_small = ImageFont.load_default()
+
+    # 예측 레이블 + 신뢰도
+    draw.text((10, H_img + 6), f"Prediction: {label}  ({probs[label]:.1%})", fill=(20, 20, 20), font=font_large)
+
+    # 확률 바 (10개 클래스, 각 26px 폭)
+    bar_top = H_img + 46
+    bar_max_h = 50
+    for i, p in enumerate(probs):
+        x = 4 + i * 27
+        bar_h = int(p * bar_max_h)
+        color = (239, 85, 59) if i == label else (99, 110, 250)
+        draw.rectangle([x, bar_top + (bar_max_h - bar_h), x + 22, bar_top + bar_max_h], fill=color)
+        draw.text((x + 4, bar_top + bar_max_h + 2), str(i), fill=(80, 80, 80), font=font_small)
+
     buf = io.BytesIO()
-    Image.fromarray(uint8, mode="L").save(buf, format="PNG")
+    canvas.save(buf, format="PNG")
     return buf.getvalue()
 
 
@@ -135,7 +173,7 @@ if has_drawing:
     st.session_state.last_preview = preview
     st.session_state.last_probs = probs
     st.session_state.last_pred_label = pred_label
-    st.session_state.last_png_bytes = _to_png_bytes(preview)
+    st.session_state.last_png_bytes = _to_png_bytes(preview, pred_label, probs)
 else:
     st.session_state.last_preview = None
     st.session_state.last_probs = None
