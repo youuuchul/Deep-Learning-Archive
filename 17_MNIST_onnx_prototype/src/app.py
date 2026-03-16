@@ -26,6 +26,25 @@ st.set_page_config(
     layout="wide",
 )
 
+# 다크모드 버튼 가시성 보정
+st.markdown(
+    """
+    <style>
+    /* secondary 버튼: 다크모드에서 테두리+텍스트 흰색으로 */
+    [data-testid="stBaseButton-secondary"] {
+        border: 1px solid rgba(255, 255, 255, 0.4) !important;
+        color: inherit !important;
+    }
+    /* download 버튼도 동일 적용 */
+    [data-testid="stBaseButton-downloadButton"] {
+        border: 1px solid rgba(255, 255, 255, 0.4) !important;
+        color: inherit !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 st.title("MNIST 숫자 인식기")
 st.caption("캔버스에 숫자(0~9)를 그리면 ONNX 모델이 자동으로 인식합니다.")
 
