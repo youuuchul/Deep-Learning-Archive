@@ -774,10 +774,15 @@ has_drawing = (
     <div class="section-label">06</div>
     <h2>앱 화면</h2>
 
-    <div class="screenshot-note">
-      [ 스크린샷 삽입 영역 ]<br>
-      screenshots/app_main.png &nbsp;·&nbsp; screenshots/prediction_result.png<br>
-      <span style="font-size:10px; opacity:0.5">PDF 변환 전 캡처 이미지를 &lt;img&gt; 태그로 교체</span>
+    <div style="display:flex; flex-direction:column; gap:16px;">
+      <div>
+        <div style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:0.2em; color:var(--muted); margin-bottom:8px; text-transform:uppercase;">전체 화면</div>
+        <img src="../screenshots/app_main.png" alt="앱 전체 화면" style="width:100%; border:1px solid var(--border); display:block;">
+      </div>
+      <div>
+        <div style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:0.2em; color:var(--muted); margin-bottom:8px; text-transform:uppercase;">예측 결과</div>
+        <img src="../screenshots/prediction_result.png" alt="예측 결과" style="width:100%; border:1px solid var(--border); display:block;">
+      </div>
     </div>
   </div>
 
