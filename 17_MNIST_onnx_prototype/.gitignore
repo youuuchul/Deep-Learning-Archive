@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+dist/
+
+# uv
+.python-version
+
+# Data / Models
+# mnist-12.onnx는 Apache 2.0 라이선스로 레포에 포함 (26KB, GitHub 허용 범위)
+# data/models/*.onnx
+
+# Streamlit
+.streamlit/
+
+# OS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Reports (generated)
+reports/*.pdf
+reports/*.zip

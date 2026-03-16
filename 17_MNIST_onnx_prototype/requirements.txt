@@ -1,0 +1,7 @@
+streamlit
+streamlit-drawable-canvas
+onnxruntime
+numpy
+pillow
+pandas
+plotly
