@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mission 17 — MNIST ONNX 보고서</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #0b0c14;
+  --surface:  #13141f;
+  --border:   #1e2035;
+  --cyan:     #00d4ff;
+  --amber:    #ffaa00;
+  --green:    #00ff8c;
+  --red:      #ff4757;
+  --text:     #e2e4f0;
+  --muted:    #6b7099;
+  --code-bg:  #0d0e1a;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300;
+  line-height: 1.8;
+  font-size: 15px;
+}
+
+/* ── 픽셀 그리드 배경 ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,212,255,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,.03) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── 커버 ── */
+.cover {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px 10%;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+}
+
+.cover-bg-digits {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  opacity: 0.04;
+  font-family: 'Space Mono', monospace;
+  font-size: 48px;
+  line-height: 1;
+  color: var(--cyan);
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+
+.cover-bg-digits span {
+  display: inline-block;
+  width: 56px;
+  text-align: center;
+  animation: flicker 4s infinite;
+}
+
+.cover-bg-digits span:nth-child(3n)   { animation-delay: 0.5s; }
+.cover-bg-digits span:nth-child(5n)   { animation-delay: 1.2s; }
+.cover-bg-digits span:nth-child(7n)   { animation-delay: 2.1s; }
+.cover-bg-digits span:nth-child(11n)  { animation-delay: 0.8s; opacity: 0.5; }
+
+@keyframes flicker {
+  0%,95%,100% { opacity: 1; }
+  96%          { opacity: 0.1; }
+}
+
+.mission-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.mission-label::before {
+  content: '▶ ';
+  opacity: 0.6;
+}
+
+.cover h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(42px, 6vw, 76px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: #fff;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 12px;
+}
+
+.cover h1 em {
+  font-style: italic;
+  color: var(--cyan);
+}
+
+.cover-sub {
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  color: var(--muted);
+  position: relative;
+  z-index: 1;
+  margin-bottom: 48px;
+}
+
+.meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  max-width: 680px;
+  position: relative;
+  z-index: 1;
+}
+
+.meta-item {
+  background: var(--surface);
+  padding: 16px 20px;
+}
+
+.meta-item .label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.meta-item .value {
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.meta-item .value a {
+  color: var(--cyan);
+  text-decoration: none;
+}
+
+/* ── 공통 레이아웃 ── */
+.page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 80px 40px;
+  position: relative;
+  z-index: 1;
+}
+
+.section {
+  margin-bottom: 80px;
+}
+
+.section-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+  max-width: 120px;
+}
+
+h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 32px;
+  color: #fff;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  margin-bottom: 24px;
+  line-height: 1.2;
+}
+
+h3 {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin: 32px 0 12px;
+  font-family: 'Space Mono', monospace;
+}
+
+p { margin-bottom: 16px; color: #c4c8e0; }
+
+/* ── 기술 스택 칩 ── */
+.stack-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.chip {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  letter-spacing: 0.05em;
+}
+
+.chip.cyan  { border-color: var(--cyan);  color: var(--cyan);  background: rgba(0,212,255,.06); }
+.chip.amber { border-color: var(--amber); color: var(--amber); background: rgba(255,170,0,.06); }
+.chip.green { border-color: var(--green); color: var(--green); background: rgba(0,255,140,.06); }
+
+/* ── 파이프라인 다이어그램 ── */
+.pipeline {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin: 32px 0;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.pipe-step {
+  flex: 1;
+  min-width: 110px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 20px 14px;
+  position: relative;
+  text-align: center;
+}
+
+.pipe-step:not(:last-child)::after {
+  content: '→';
+  position: absolute;
+  right: -14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--cyan);
+  font-family: 'Space Mono', monospace;
+  font-size: 16px;
+  z-index: 2;
+  background: var(--bg);
+  padding: 2px 3px;
+}
+
+.pipe-step .step-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  margin-bottom: 8px;
+  letter-spacing: 0.1em;
+}
+
+.pipe-step .step-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--cyan);
+  font-weight: 700;
+  margin-bottom: 6px;
+  letter-spacing: 0.05em;
+}
+
+.pipe-step .step-detail {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.pipe-step .step-shape {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--amber);
+  margin-top: 8px;
+  padding: 3px 6px;
+  border: 1px solid rgba(255,170,0,.3);
+  display: inline-block;
+}
+
+/* ── 코드 블록 ── */
+.code-wrap {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--cyan);
+  margin: 20px 0;
+  overflow-x: auto;
+}
+
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,212,255,.04);
+}
+
+.code-header .filename {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--cyan);
+}
+
+.code-header .lang {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+}
+
+pre {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  line-height: 1.9;
+  padding: 20px;
+  color: #c4cde8;
+  tab-size: 4;
+}
+
+.kw  { color: #bb86fc; }
+.fn  { color: #00d4ff; }
+.str { color: #00ff8c; }
+.cm  { color: #4a5080; font-style: italic; }
+.dec { color: var(--amber); }
+.num { color: #ff9580; }
+
+/* ── 인사이트 카드 ── */
+.insight-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+@media (max-width: 600px) { .insight-grid { grid-template-columns: 1fr; } }
+
+.insight-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.insight-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+
+.insight-card.cyan::before  { background: var(--cyan); }
+.insight-card.amber::before { background: var(--amber); }
+.insight-card.green::before { background: var(--green); }
+
+.insight-card .ic-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.insight-card .ic-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.insight-card .ic-body {
+  font-size: 13px;
+  color: #9095b8;
+  line-height: 1.7;
+}
+
+/* ── 모델 스펙 테이블 ── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  margin: 16px 0;
+}
+
+th {
+  background: rgba(0,212,255,.08);
+  color: var(--cyan);
+  font-weight: 700;
+  padding: 10px 16px;
+  text-align: left;
+  border: 1px solid var(--border);
+  letter-spacing: 0.1em;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+td {
+  padding: 10px 16px;
+  border: 1px solid var(--border);
+  color: #c4c8e0;
+}
+
+tr:nth-child(even) td { background: rgba(255,255,255,.02); }
+
+/* ── 배포 섹션 ── */
+.deploy-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.deploy-card {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 24px;
+}
+
+.deploy-card .dc-icon {
+  font-size: 24px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.deploy-card .dc-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  color: var(--text);
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+}
+
+.deploy-card .dc-url {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--cyan);
+  word-break: break-all;
+}
+
+.deploy-card .dc-url a {
+  color: var(--cyan);
+  text-decoration: none;
+}
+
+.deploy-card .dc-desc {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 8px;
+  line-height: 1.6;
+}
+
+/* ── 구분선 ── */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0;
+}
+
+/* ── 스크린샷 플레이스홀더 ── */
+.screenshot-note {
+  border: 1px dashed var(--border);
+  padding: 32px;
+  text-align: center;
+  color: var(--muted);
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  line-height: 2;
+}
+
+/* ── 푸터 ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 10%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+footer .ft-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+footer .ft-mission {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--cyan);
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════ COVER ══════════════════════════════ -->
+<div class="cover">
+  <div class="cover-bg-digits" id="bgDigits"></div>
+
+  <div class="mission-label">Mission 17 &nbsp;·&nbsp; Deep Learning Archive</div>
+
+  <h1>MNIST <em>ONNX</em><br>Prototype</h1>
+  <p class="cover-sub">손글씨 숫자 인식 Streamlit 웹 앱 &nbsp;·&nbsp; ONNX Runtime 추론 &nbsp;·&nbsp; Docker 배포</p>
+
+  <div class="meta-grid">
+    <div class="meta-item">
+      <div class="label">모델</div>
+      <div class="value">MNIST-12 (ONNX)</div>
+    </div>
+    <div class="meta-item">
+      <div class="label">프레임워크</div>
+      <div class="value">Streamlit + ONNX Runtime</div>
+    </div>
+    <div class="meta-item">
+      <div class="label">라이브 데모</div>
+      <div class="value"><a href="https://minist-onnx-prototype.streamlit.app" target="_blank">streamlit.app ↗</a></div>
+    </div>
+    <div class="meta-item">
+      <div class="label">작성일</div>
+      <div class="value">2026. 03</div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<div class="page">
+
+  <!-- ══ 01 프로젝트 개요 ══ -->
+  <div class="section">
+    <div class="section-label">01</div>
+    <h2>프로젝트 개요</h2>
+    <p>
+      ONNX Model Zoo에서 제공하는 사전 학습된 MNIST 분류 모델(<code>mnist-12.onnx</code>)을 활용해,
+      사용자가 웹 브라우저에서 직접 숫자를 그리면 실시간으로 0~9를 인식하는 Streamlit 기반 웹 서비스입니다.
+    </p>
+    <p>
+      모델 추론부터 이미지 전처리, UI 구성, Docker 컨테이너화, Streamlit Community Cloud 배포까지
+      ML 기반 서비스의 전체 라이프사이클을 구현했습니다.
+    </p>
+
+    <h3>기술 스택</h3>
+    <div class="stack-grid">
+      <span class="chip cyan">ONNX Runtime</span>
+      <span class="chip cyan">Streamlit</span>
+      <span class="chip cyan">streamlit-drawable-canvas</span>
+      <span class="chip amber">Plotly</span>
+      <span class="chip amber">NumPy</span>
+      <span class="chip amber">Pillow</span>
+      <span class="chip green">Docker</span>
+      <span class="chip green">Streamlit Cloud</span>
+      <span class="chip">Python 3.11</span>
+      <span class="chip">uv</span>
+    </div>
+  </div>
+
+  <!-- ══ 02 모델 스펙 ══ -->
+  <div class="section">
+    <div class="section-label">02</div>
+    <h2>모델 스펙</h2>
+    <p>
+      <code>mnist-12.onnx</code>는 ONNX Model Zoo가 제공하는 LeNet 기반 MNIST 분류 모델입니다.
+      Apache License 2.0으로 배포되며 수정 없이 원본 그대로 사용했습니다.
+    </p>
+
+    <table>
+      <tr><th>항목</th><th>값</th></tr>
+      <tr><td>파일명</td><td>mnist-12.onnx</td></tr>
+      <tr><td>입력 노드</td><td>Input3</td></tr>
+      <tr><td>입력 Shape</td><td>[1, 1, 28, 28] &nbsp;·&nbsp; float32</td></tr>
+      <tr><td>출력 노드</td><td>Plus214_Output_0</td></tr>
+      <tr><td>출력 Shape</td><td>[1, 10] &nbsp;·&nbsp; logits</td></tr>
+      <tr><td>파일 크기</td><td>약 26 KB</td></tr>
+      <tr><td>라이선스</td><td>Apache License 2.0 (ONNX Model Zoo)</td></tr>
+    </table>
+  </div>
+
+  <!-- ══ 03 전처리 파이프라인 ══ -->
+  <div class="section">
+    <div class="section-label">03</div>
+    <h2>전처리 파이프라인</h2>
+    <p>
+      <code>streamlit-drawable-canvas</code>는 RGBA 배열을 반환합니다.
+      MNIST 모델이 기대하는 <strong>검정 배경 / 흰 선</strong> 형식으로 변환하기 위해
+      아래 5단계 파이프라인을 거칩니다.
+    </p>
+
+    <div class="pipeline">
+      <div class="pipe-step">
+        <div class="step-num">STEP 1</div>
+        <div class="step-title">RGBA→Gray</div>
+        <div class="step-detail">PIL .convert("L")<br>알파 채널 제거</div>
+        <div class="step-shape">280×280×4</div>
+      </div>
+      <div class="pipe-step">
+        <div class="step-num">STEP 2</div>
+        <div class="step-title">반전</div>
+        <div class="step-detail">255 − pixel<br>흰배경→검정배경</div>
+        <div class="step-shape">280×280</div>
+      </div>
+      <div class="pipe-step">
+        <div class="step-num">STEP 3</div>
+        <div class="step-title">Resize</div>
+        <div class="step-detail">LANCZOS 보간<br>28×28 축소</div>
+        <div class="step-shape">28×28</div>
+      </div>
+      <div class="pipe-step">
+        <div class="step-num">STEP 4</div>
+        <div class="step-title">정규화</div>
+        <div class="step-detail">÷ 255<br>float32 변환</div>
+        <div class="step-shape">0.0 ~ 1.0</div>
+      </div>
+      <div class="pipe-step">
+        <div class="step-num">STEP 5</div>
+        <div class="step-title">Reshape</div>
+        <div class="step-detail">배치·채널 축<br>추가</div>
+        <div class="step-shape">[1,1,28,28]</div>
+      </div>
+    </div>
+
+    <p style="font-size:13px; color:var(--muted);">
+      ⚠ 반전(Step 2)은 필수입니다. 캔버스는 흰 배경에 검정 선으로 그려지지만,
+      MNIST 학습 데이터는 검정 배경에 흰 선 형식이므로 픽셀값을 반전하지 않으면
+      모델이 올바르게 동작하지 않습니다.
+    </p>
+  </div>
+
+  <!-- ══ 04 코드 설명 ══ -->
+  <div class="section">
+    <div class="section-label">04</div>
+    <h2>코드 설명</h2>
+
+    <!-- model.py -->
+    <h3>model.py — 모델 로드 &amp; 추론</h3>
+    <p>
+      <code>@st.cache_resource</code> 데코레이터로 <code>InferenceSession</code>을 앱 생애주기 동안
+      단 한 번만 로드합니다. 모델 파일이 없을 경우 <code>urllib</code>로 자동 다운로드하여
+      Streamlit Community Cloud 환경에서도 별도 설정 없이 동작합니다.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="filename">src/model.py</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><span class="dec">@st.cache_resource</span>
+<span class="kw">def</span> <span class="fn">load_session</span>() -> ort.InferenceSession:
+    <span class="cm"># 모델 없으면 자동 다운로드 (Cloud 대응)</span>
+    <span class="kw">if not</span> MODEL_PATH.exists():
+        _download_model()
+    <span class="kw">return</span> ort.InferenceSession(<span class="fn">str</span>(MODEL_PATH))
+
+<span class="kw">def</span> <span class="fn">predict</span>(session, input_array) -> np.ndarray:
+    logits = session.<span class="fn">run</span>([OUTPUT_NAME], {INPUT_NAME: input_array})[<span class="num">0</span>][<span class="num">0</span>]
+    <span class="cm"># Numerical stability: subtract max before exp</span>
+    exp = np.<span class="fn">exp</span>(logits - logits.<span class="fn">max</span>())
+    <span class="kw">return</span> exp / exp.<span class="fn">sum</span>()   <span class="cm"># softmax → 확률 [10]</span></pre>
+    </div>
+
+    <!-- preprocess.py -->
+    <h3>preprocess.py — 이미지 전처리</h3>
+    <p>
+      캔버스 출력(RGBA)을 모델 입력([1,1,28,28] float32)으로 변환합니다.
+      동시에 UI 시각화를 위한 28×28 미리보기 배열도 반환합니다.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="filename">src/preprocess.py</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><span class="kw">def</span> <span class="fn">canvas_to_model_input</span>(image_data: np.ndarray):
+    pil_img = Image.<span class="fn">fromarray</span>(image_data.astype(np.uint8), mode=<span class="str">"RGBA"</span>)
+    gray    = pil_img.<span class="fn">convert</span>(<span class="str">"L"</span>)
+    inverted = <span class="num">255.0</span> - np.<span class="fn">array</span>(gray, dtype=np.float32)   <span class="cm"># 반전</span>
+    resized  = Image.<span class="fn">fromarray</span>(inverted).<span class="fn">resize</span>((<span class="num">28</span>, <span class="num">28</span>), Image.LANCZOS)
+    normalized = np.<span class="fn">array</span>(resized, dtype=np.float32) / <span class="num">255.0</span>
+    model_input = normalized.<span class="fn">reshape</span>(<span class="num">1</span>, <span class="num">1</span>, <span class="num">28</span>, <span class="num">28</span>).astype(np.float32)
+    <span class="kw">return</span> model_input, normalized  <span class="cm"># (모델입력, 미리보기)</span></pre>
+    </div>
+
+    <!-- app.py -->
+    <h3>app.py — UI &amp; 실시간 추론 흐름</h3>
+    <p>
+      캔버스에 획이 그려지는 즉시 추론이 실행됩니다.
+      <code>canvas_result.json_data["objects"]</code>로 실제 스트로크 유무를 판단해
+      빈 캔버스에서는 모델을 호출하지 않으며, 확률 차트는 모두 0.0으로 표시됩니다.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="filename">src/app.py — 실시간 예측 핵심 로직</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><span class="cm"># 흰 배경 캔버스는 alpha 합이 항상 >0이므로 json_data.objects로 판단</span>
+has_drawing = (
+    canvas_result.json_data <span class="kw">is not</span> <span class="kw">None</span>
+    <span class="kw">and</span> <span class="fn">len</span>(canvas_result.json_data.<span class="fn">get</span>(<span class="str">"objects"</span>, [])) > <span class="num">0</span>
+)
+
+<span class="kw">if</span> has_drawing:
+    model_input, preview = <span class="fn">canvas_to_model_input</span>(canvas_result.image_data)
+    probs      = <span class="fn">predict</span>(session, model_input)   <span class="cm"># [10] softmax 확률</span>
+    pred_label = <span class="fn">int</span>(probs.<span class="fn">argmax</span>())
+    <span class="cm"># session_state에 저장 → 차트·메트릭·다운로드 버튼 렌더링</span></pre>
+    </div>
+  </div>
+
+  <!-- ══ 05 구현 특이사항 ══ -->
+  <div class="section">
+    <div class="section-label">05</div>
+    <h2>구현 특이사항</h2>
+    <p>미션 가이드의 기본 스펙을 충족하면서 UX 관점에서 두 가지를 개선했습니다.</p>
+
+    <div class="insight-grid">
+      <div class="insight-card cyan">
+        <div class="ic-label">변경 01</div>
+        <div class="ic-title">예측 버튼 제거 → 실시간 자동 추론</div>
+        <div class="ic-body">
+          가이드에서 가정한 별도 예측 버튼 대신, 캔버스에 획이 그려지는 즉시 모델이 호출됩니다.
+          <code>json_data.objects</code>를 활용해 실제 스트로크가 존재할 때만 추론하며,
+          빈 캔버스에서는 모든 클래스 확률이 0.0으로 표시됩니다.
+        </div>
+      </div>
+      <div class="insight-card amber">
+        <div class="ic-label">변경 02</div>
+        <div class="ic-title">세션 저장소 → 결과 합성 PNG 다운로드</div>
+        <div class="ic-body">
+          가이드의 session_state 이미지 목록 방식 대신, 예측 결과를 합성한 PNG를 직접 다운로드합니다.
+          저장 파일에는 28×28 업스케일 이미지 + 예측 레이블 + 신뢰도 + 전체 클래스 확률 바가 포함됩니다.
+          세션 초기화 시 데이터 소실 문제를 근본적으로 해결합니다.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 06 앱 화면 ══ -->
+  <div class="section">
+    <div class="section-label">06</div>
+    <h2>앱 화면</h2>
+
+    <div class="screenshot-note">
+      [ 스크린샷 삽입 영역 ]<br>
+      screenshots/app_main.png &nbsp;·&nbsp; screenshots/prediction_result.png<br>
+      <span style="font-size:10px; opacity:0.5">PDF 변환 전 캡처 이미지를 &lt;img&gt; 태그로 교체</span>
+    </div>
+  </div>
+
+  <!-- ══ 07 배포 ══ -->
+  <div class="section">
+    <div class="section-label">07</div>
+    <h2>배포</h2>
+
+    <div class="deploy-grid">
+      <div class="deploy-card">
+        <span class="dc-icon">☁️</span>
+        <div class="dc-title">Streamlit Community Cloud</div>
+        <div class="dc-url">
+          <a href="https://minist-onnx-prototype.streamlit.app" target="_blank">
+            https://minist-onnx-prototype.streamlit.app
+          </a>
+        </div>
+        <div class="dc-desc">
+          GitHub main 브랜치 연동 자동 배포.<br>
+          모델 파일 레포 포함 (Apache 2.0).
+        </div>
+      </div>
+      <div class="deploy-card">
+        <span class="dc-icon">🐳</span>
+        <div class="dc-title">Docker Hub</div>
+        <div class="dc-url" style="color:var(--muted);">
+          배포 후 URL 기입
+        </div>
+        <div class="dc-desc">
+          python:3.11-slim 기반.<br>
+          <code>docker run -p 8501:8501 &lt;image&gt;</code>
+        </div>
+      </div>
+    </div>
+
+    <h3>Dockerfile 핵심</h3>
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="filename">docker/Dockerfile</span>
+        <span class="lang">Dockerfile</span>
+      </div>
+      <pre><span class="kw">FROM</span> python:<span class="num">3.11</span>-slim
+<span class="kw">WORKDIR</span> /app
+<span class="kw">COPY</span> pyproject.toml .
+<span class="kw">RUN</span>  pip install --no-cache-dir streamlit streamlit-drawable-canvas \
+         onnxruntime numpy pillow pandas plotly
+<span class="kw">COPY</span> src/ ./src/
+<span class="kw">COPY</span> data/models/mnist-<span class="num">12</span>.onnx ./data/models/mnist-<span class="num">12</span>.onnx
+<span class="kw">EXPOSE</span> <span class="num">8501</span>
+<span class="kw">CMD</span>  [<span class="str">"streamlit"</span>, <span class="str">"run"</span>, <span class="str">"src/app.py"</span>, <span class="str">"--server.port=8501"</span>, <span class="str">"--server.address=0.0.0.0"</span>]</pre>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<hr class="divider">
+<footer>
+  <span class="ft-label">Deep Learning Archive &nbsp;·&nbsp; 2026.03</span>
+  <span class="ft-mission">Mission 17 — MNIST ONNX Prototype</span>
+</footer>
+
+<script>
+// 커버 배경 숫자 생성
+const container = document.getElementById('bgDigits');
+const digits = '0123456789';
+for (let i = 0; i < 400; i++) {
+  const span = document.createElement('span');
+  span.textContent = digits[Math.floor(Math.random() * digits.length)];
+  span.style.animationDelay = (Math.random() * 5) + 's';
+  span.style.opacity = (Math.random() * 0.6 + 0.2).toString();
+  container.appendChild(span);
+}
+</script>
+</body>
+</html>
