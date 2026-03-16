@@ -18,8 +18,8 @@ streamlit run src/app.py
 
 ### Docker
 ```bash
-docker build -f docker/Dockerfile -t mnist-onnx:latest .
-docker run -p 8501:8501 mnist-onnx:latest
+docker pull youuchul/mnist-onnx:latest
+docker run -p 8501:8501 youuchul/mnist-onnx:latest
 ```
 
 ## 기술 스택
@@ -28,6 +28,12 @@ docker run -p 8501:8501 mnist-onnx:latest
 - **UI**: Streamlit + streamlit-drawable-canvas
 - **차트**: Plotly
 - **패키지 관리**: uv
+
+## 배포
+| 플랫폼 | URL |
+|--------|-----|
+| Streamlit Community Cloud | https://minist-onnx-prototype.streamlit.app |
+| Docker Hub | https://hub.docker.com/r/youuchul/mnist-onnx |
 
 ## 모델 출처 및 라이선스
 
@@ -41,8 +47,13 @@ docker run -p 8501:8501 mnist-onnx:latest
 ## 폴더 구조
 ```
 17_MNIST_onnx_prototype/
-├── src/          — 앱 소스코드 + requirements.txt
-├── data/models/  — mnist-12.onnx (Apache 2.0)
-├── docker/       — Dockerfile
-└── plan.md       — 실습 체크리스트
+├── src/              — 앱 소스코드 + requirements.txt
+│   ├── app.py        — Streamlit 메인 (실시간 추론)
+│   ├── model.py      — ONNX 세션 로드 + 캐싱
+│   └── preprocess.py — 캔버스 → 모델 입력 변환
+├── data/models/      — mnist-12.onnx (Apache 2.0)
+├── docker/           — Dockerfile
+├── reports/          — HTML 보고서
+├── screenshots/      — 앱 스크린샷
+└── study-notes/      — ONNX Runtime / Streamlit Canvas 학습 노트
 ```
